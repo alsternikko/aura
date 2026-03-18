@@ -1,0 +1,31 @@
+.root {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+
+.icon {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.sep {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+  margin: 0 -1px;
+}
+
+.sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}

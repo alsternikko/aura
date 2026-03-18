@@ -1,0 +1,22 @@
+.wrap {
+  position: relative;
+  flex-shrink: 0;
+  transition: filter 0.5s ease, width 0.3s ease, height 0.3s ease;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: opacity 0.5s ease;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  background-size: 300px;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}

@@ -1,0 +1,69 @@
+.stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 28px 28px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 10;
+}
+
+.dialMeta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+}
+
+.dialName {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  transition: opacity 0.2s;
+}
+
+.scrollHint {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateY(-180px);
+  font-size: 10px;
+  font-family: 'Geist Mono', monospace;
+  color: rgba(255, 255, 255, 0.22);
+  letter-spacing: 0.06em;
+  pointer-events: none;
+  transition: opacity 0.5s;
+  z-index: 5;
+}
+
+.exportFlash {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 50;
+}
+
+@media (max-width: 520px) {
+  .controls {
+    padding: 16px 16px 24px;
+    gap: 12px;
+  }
+}

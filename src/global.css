@@ -1,0 +1,46 @@
+:root {
+  --g100: #f2f2f2;
+  --g200: #ebebeb;
+  --g300: #e0e0e0;
+  --g400: #c8c8c8;
+  --g500: #a0a0a0;
+  --g600: #6f6f6f;
+  --g700: #525252;
+  --g800: #3d3d3d;
+  --g900: #2a2a2a;
+  --g1000: #0a0a0a;
+  --bg: #ffffff;
+  --surface: rgba(255, 255, 255, 0.92);
+  --border: rgba(0, 0, 0, 0.1);
+  --border-md: rgba(0, 0, 0, 0.16);
+  --text-1: #0a0a0a;
+  --text-2: #525252;
+  --text-3: #a0a0a0;
+  --r: 8px;
+  --r-lg: 12px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Geist', -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  background: #0f0e0d;
+  color: #fff;
+  transition: background 0.7s ease;
+}
