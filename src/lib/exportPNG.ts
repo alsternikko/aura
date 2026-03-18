@@ -8,9 +8,12 @@ export function exportPNG(pairing: Pairing, atmoProps: AtmoProps, size: number):
   const cx = tmpSz / 2;
   const cy = tmpSz / 2;
 
+  const blurExtent = Math.ceil(blurPx * 3);
+  const outSz = Math.max(size, Math.ceil((orbR + blurExtent) * 2));
+
   flashScreen();
 
-  /* Step 1 — gradient on oversized canvas, circle-clipped, no grain */
+  /* Step 1 — gradient on oversized canvas, circle-clipped */
   const tmp = document.createElement('canvas');
   tmp.width = tmpSz;
   tmp.height = tmpSz;
@@ -33,27 +36,14 @@ export function exportPNG(pairing: Pairing, atmoProps: AtmoProps, size: number):
   tctx.fillRect(0, 0, tmpSz, tmpSz);
   tctx.restore();
 
-  /* Step 2 — blur gradient onto output canvas (transparent bg) */
-  const out = document.createElement('canvas');
-  out.width = size;
-  out.height = size;
-  const ctx = out.getContext('2d')!;
-
-  if (blurPx > 0) {
-    ctx.filter = `blur(${blurPx}px)`;
-    ctx.drawImage(tmp, -pad, -pad);
-    ctx.filter = 'none';
-  } else {
-    ctx.drawImage(tmp, -pad, -pad);
-  }
-
-  /* Step 3 — grain AFTER blur, circle-clipped to orbR */
+  /* Step 2 — grain overlay on tmp, same circle clip (BEFORE blur) */
   if (atmoProps.grain > 0) {
+    const noiseSz = orbR * 2;
     const nc = document.createElement('canvas');
-    nc.width = size;
-    nc.height = size;
+    nc.width = noiseSz;
+    nc.height = noiseSz;
     const nctx = nc.getContext('2d')!;
-    const nd = nctx.createImageData(size, size);
+    const nd = nctx.createImageData(noiseSz, noiseSz);
     const dd = nd.data;
     for (let i = 0; i < dd.length; i += 4) {
       const v = (Math.random() * 255) | 0;
@@ -64,14 +54,30 @@ export function exportPNG(pairing: Pairing, atmoProps: AtmoProps, size: number):
     }
     nctx.putImageData(nd, 0, 0);
 
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(size / 2, size / 2, orbR, 0, Math.PI * 2);
-    ctx.clip();
-    ctx.globalCompositeOperation = 'overlay';
-    ctx.drawImage(nc, 0, 0);
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.restore();
+    tctx.save();
+    tctx.beginPath();
+    tctx.arc(cx, cy, orbR, 0, Math.PI * 2);
+    tctx.clip();
+    tctx.globalCompositeOperation = 'overlay';
+    tctx.drawImage(nc, cx - orbR, cy - orbR);
+    tctx.globalCompositeOperation = 'source-over';
+    tctx.restore();
+  }
+
+  /* Step 3 — blur combined gradient+grain onto dynamically sized output */
+  const out = document.createElement('canvas');
+  out.width = outSz;
+  out.height = outSz;
+  const ctx = out.getContext('2d')!;
+
+  const offset = (outSz - tmpSz) / 2;
+
+  if (blurPx > 0) {
+    ctx.filter = `blur(${blurPx}px)`;
+    ctx.drawImage(tmp, offset, offset);
+    ctx.filter = 'none';
+  } else {
+    ctx.drawImage(tmp, offset, offset);
   }
 
   out.toBlob((blob) => {
@@ -79,7 +85,7 @@ export function exportPNG(pairing: Pairing, atmoProps: AtmoProps, size: number):
       alert('Export failed — try a smaller size.');
       return;
     }
-    triggerDownload(blob, `aura-${pairing.name.toLowerCase()}-${size}.png`);
+    triggerDownload(blob, `aura-${pairing.name.toLowerCase()}-${outSz}.png`);
   });
 }
 
