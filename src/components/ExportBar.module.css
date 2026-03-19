@@ -6,8 +6,7 @@
   justify-content: space-between;
 }
 
-/* Shuffle */
-.shuffle {
+.randomize {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -27,13 +26,13 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
-.shuffle:hover {
+.randomize:hover {
   background: rgba(255, 255, 255, 0.14);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.28);
 }
 
-.shuffle svg {
+.randomize svg {
   width: 13px;
   height: 13px;
   flex-shrink: 0;

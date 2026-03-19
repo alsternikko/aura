@@ -15,10 +15,11 @@
   font-family: 'Geist Mono', monospace;
   width: 72px;
   flex-shrink: 0;
+  text-align: right;
 }
 
 .labelEnd {
-  text-align: right;
+  text-align: left;
 }
 
 .slider {

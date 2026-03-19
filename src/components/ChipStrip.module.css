@@ -1,7 +1,7 @@
 .wrap {
   position: relative;
   width: 100%;
-  max-width: 600px;
+  max-width: 680px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -22,6 +22,7 @@
   transition: background 0.15s, border-color 0.15s, color 0.15s;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  z-index: 1;
 }
 
 .arrow:hover {
@@ -38,17 +39,27 @@
 
 .strip {
   flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   height: 36px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.strip::-webkit-scrollbar {
+  display: none;
 }
 
 .inner {
   display: flex;
   gap: 6px;
   align-items: center;
+  padding: 0 4px;
+  margin: 0 auto;
 }
 
 .chip {

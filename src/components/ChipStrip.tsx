@@ -1,3 +1,4 @@
+import { useRef, useEffect } from 'react';
 import type { Pairing } from '../tokens/pairings.ts';
 import { chipCSS } from '../lib/gradient.ts';
 import s from './ChipStrip.module.css';
@@ -10,6 +11,16 @@ interface ChipStripProps {
 }
 
 export function ChipStrip({ pairings, activeIdx, onSelect, onNav }: ChipStripProps) {
+  const stripRef = useRef<HTMLDivElement>(null);
+  const chipRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  useEffect(() => {
+    const chip = chipRefs.current[activeIdx];
+    if (chip) {
+      chip.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
+    }
+  }, [activeIdx, pairings.length]);
+
   return (
     <div className={s.wrap}>
       <button className={s.arrow} onClick={() => onNav(-1)} title="Previous (←)">
@@ -18,11 +29,12 @@ export function ChipStrip({ pairings, activeIdx, onSelect, onNav }: ChipStripPro
         </svg>
       </button>
 
-      <div className={s.strip}>
+      <div ref={stripRef} className={s.strip}>
         <div className={s.inner}>
           {pairings.map((p, i) => (
             <button
-              key={p.name}
+              key={`${i}-${p.name}`}
+              ref={(el) => { chipRefs.current[i] = el; }}
               className={`${s.chip}${i === activeIdx ? ` ${s.chipActive}` : ''}`}
               style={{ background: chipCSS(p.stops) }}
               title={p.name}

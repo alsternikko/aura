@@ -8,7 +8,7 @@ interface ExportBarProps {
   onSizeChange: (sz: number) => void;
   onFormatChange: (fmt: ExportFormat) => void;
   onExport: () => void;
-  onShuffle: () => void;
+  onRandomize: () => void;
 }
 
 const SIZES = [512, 1024, 2048] as const;
@@ -19,19 +19,19 @@ export function ExportBar({
   onSizeChange,
   onFormatChange,
   onExport,
-  onShuffle,
+  onRandomize,
 }: ExportBarProps) {
   return (
     <div className={s.row}>
-      <button className={s.shuffle} onClick={onShuffle}>
+      <button className={s.randomize} onClick={onRandomize}>
         <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M1 4h2a4 4 0 0 1 3.2 1.6L10 10a4 4 0 0 0 3.2 1.6" />
-          <path d="M10 4a4 4 0 0 1 3.2 1.6" />
-          <path d="M1 11.6A4 4 0 0 0 4.2 10" />
-          <path d="M11.5 2.5 13 4l-1.5 1.5" />
-          <path d="M11.5 9.5 13 11l-1.5 1.5" />
+          <path d="M1 4h2.5C5 4 5.8 4.5 6.5 5.5L7.5 7l1 1.5c.7 1 1.5 1.5 3 1.5H13" />
+          <path d="M1 10h2.5C5 10 5.8 9.5 6.5 8.5" />
+          <path d="M8.5 5.5C9.2 4.5 10 4 11.5 4H13" />
+          <path d="M11 2l2 2-2 2" />
+          <path d="M11 8l2 2-2 2" />
         </svg>
-        Shuffle
+        Randomize
       </button>
 
       <div className={s.exportGroup}>

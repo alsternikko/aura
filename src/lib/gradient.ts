@@ -1,10 +1,10 @@
 import type { GradientStop, AtmoProps } from '../tokens/pairings.ts';
+import { GRAIN_SETTINGS } from '../tokens/pairings.ts';
 
 export function atmoToProps(atmo: number): AtmoProps {
   const t = atmo / 100;
   return {
     blur: Math.round(t * t * 88),
-    grain: parseFloat((t * 0.52).toFixed(3)),
   };
 }
 
@@ -27,12 +27,17 @@ export function chipCSS(stops: GradientStop[]): string {
   return `radial-gradient(circle at 35% 35%,${stopsStr})`;
 }
 
-export function grainUrl(intensity: number): string {
-  if (!intensity) return 'none';
+export function grainUrl(): string {
+  const { size, opacity } = GRAIN_SETTINGS;
+  const freq = size.toFixed(2);
   const svg =
-    '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">' +
-    '<filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/></filter>' +
-    `<rect width="300" height="300" filter="url(#n)" opacity="${intensity}"/></svg>`;
+    '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">' +
+    '<filter id="n" color-interpolation-filters="linearRGB">' +
+    `<feTurbulence type="fractalNoise" baseFrequency="${freq}" numOctaves="4" stitchTiles="stitch"/>` +
+    '<feColorMatrix type="saturate" values="0"/>' +
+    '</filter>' +
+    `<rect width="256" height="256" filter="url(#n)" opacity="${opacity}"/>` +
+    '</svg>';
   try {
     return `url("data:image/svg+xml;base64,${btoa(svg)}")`;
   } catch {

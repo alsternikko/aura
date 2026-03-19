@@ -1,6 +1,7 @@
 import type { Pairing, AtmoProps } from '../tokens/pairings.ts';
+import { GRAIN_SETTINGS } from '../tokens/pairings.ts';
 
-export function exportSVG(pairing: Pairing, atmoProps: AtmoProps): void {
+export function exportSVG(pairing: Pairing, atmoProps: AtmoProps, grainOn: boolean): void {
   const baseSz = 1024;
   const orbR = Math.round(baseSz * 0.5 * 0.82);
   const blurScaled = atmoProps.blur * (baseSz / 500);
@@ -35,8 +36,8 @@ export function exportSVG(pairing: Pairing, atmoProps: AtmoProps): void {
   let grainDefs = '';
   let grainCircle = '';
 
-  if (atmoProps.grain > 0) {
-    const noiseDataUrl = generateNoiseTile(atmoProps.grain);
+  if (grainOn) {
+    const noiseDataUrl = generateNoiseTile();
     grainDefs =
       `<pattern id="noise" width="256" height="256" patternUnits="userSpaceOnUse">` +
       `<image href="${noiseDataUrl}" width="256" height="256"/>` +
@@ -58,15 +59,15 @@ export function exportSVG(pairing: Pairing, atmoProps: AtmoProps): void {
     '</defs>' +
     groupOpen +
     `<circle cx="${cx}" cy="${cy}" r="${orbR}" fill="url(#g)"/>` +
-    grainCircle +
     groupClose +
+    grainCircle +
     '</svg>';
 
   const blob = new Blob([svg], { type: 'image/svg+xml' });
   triggerDownload(blob, `aura-${pairing.name.toLowerCase()}.svg`);
 }
 
-function generateNoiseTile(grain: number): string {
+function generateNoiseTile(): string {
   const sz = 256;
   const c = document.createElement('canvas');
   c.width = sz;
@@ -74,12 +75,14 @@ function generateNoiseTile(grain: number): string {
   const ctx = c.getContext('2d')!;
   const img = ctx.createImageData(sz, sz);
   const d = img.data;
+  const alpha = Math.round(GRAIN_SETTINGS.opacity * 255);
   for (let i = 0; i < d.length; i += 4) {
+    if (Math.random() > GRAIN_SETTINGS.density) continue;
     const v = (Math.random() * 255) | 0;
     d[i] = v;
     d[i + 1] = v;
     d[i + 2] = v;
-    d[i + 3] = Math.round(grain * 90);
+    d[i + 3] = alpha;
   }
   ctx.putImageData(img, 0, 0);
   return c.toDataURL('image/png');

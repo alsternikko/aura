@@ -1,7 +1,12 @@
-.wrap {
+.container {
   position: relative;
   flex-shrink: 0;
-  transition: filter 0.5s ease, width 0.3s ease, height 0.3s ease;
+}
+
+.wrap {
+  position: absolute;
+  inset: 0;
+  transition: filter 0.5s ease;
 }
 
 .layer {
@@ -12,11 +17,12 @@
   transition: opacity 0.5s ease;
 }
 
-.grain {
+.grainOverlay {
   position: absolute;
   inset: 0;
-  background-size: 300px;
+  background-size: 256px;
   mix-blend-mode: overlay;
   pointer-events: none;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.3s ease;
+  z-index: 1;
 }

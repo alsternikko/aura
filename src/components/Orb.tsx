@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import type { Pairing, AtmoProps } from '../tokens/pairings.ts';
 import { gradCSS, grainUrl } from '../lib/gradient.ts';
 import s from './Orb.module.css';
@@ -6,37 +6,31 @@ import s from './Orb.module.css';
 interface OrbProps {
   pairing: Pairing;
   atmoProps: AtmoProps;
+  grainOn: boolean;
   orbSize: number;
   transitionKey: number;
 }
 
-export function Orb({ pairing, atmoProps, orbSize, transitionKey }: OrbProps) {
+export function Orb({ pairing, atmoProps, grainOn, orbSize, transitionKey }: OrbProps) {
   const layerARef = useRef<HTMLDivElement>(null);
   const layerBRef = useRef<HTMLDivElement>(null);
-  const grainARef = useRef<HTMLDivElement>(null);
-  const grainBRef = useRef<HTMLDivElement>(null);
+  const grainRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<'a' | 'b'>('a');
   const prevKeyRef = useRef(transitionKey);
 
   useEffect(() => {
     const g = gradCSS(pairing.stops);
-    const gu = grainUrl(atmoProps.grain);
-    const grainVisible = atmoProps.grain > 0 ? '1' : '0';
 
     if (transitionKey !== prevKeyRef.current) {
-      /* Crossfade: new pairing selected */
       prevKeyRef.current = transitionKey;
 
       const isA = activeRef.current === 'a';
       const fadingLayer = isA ? layerBRef.current : layerARef.current;
       const activeLayer = isA ? layerARef.current : layerBRef.current;
-      const fadingGrain = isA ? grainBRef.current : grainARef.current;
 
-      if (!fadingLayer || !activeLayer || !fadingGrain) return;
+      if (!fadingLayer || !activeLayer) return;
 
       fadingLayer.style.background = g;
-      fadingGrain.style.backgroundImage = gu;
-      fadingGrain.style.opacity = grainVisible;
 
       requestAnimationFrame(() => {
         activeLayer.style.opacity = '0';
@@ -44,31 +38,48 @@ export function Orb({ pairing, atmoProps, orbSize, transitionKey }: OrbProps) {
         activeRef.current = isA ? 'b' : 'a';
       });
     } else {
-      /* Direct update: atmo slider or initial mount */
       const layer = activeRef.current === 'a' ? layerARef.current : layerBRef.current;
-      const grain = activeRef.current === 'a' ? grainARef.current : grainBRef.current;
-
-      if (!layer || !grain) return;
-
+      if (!layer) return;
       layer.style.background = g;
-      grain.style.backgroundImage = gu;
-      grain.style.opacity = grainVisible;
     }
   }, [transitionKey, atmoProps, pairing.stops]);
 
+  useEffect(() => {
+    const el = grainRef.current;
+    if (!el) return;
+    if (grainOn) {
+      el.style.backgroundImage = grainUrl();
+      el.style.opacity = '1';
+    } else {
+      el.style.backgroundImage = 'none';
+      el.style.opacity = '0';
+    }
+  }, [grainOn]);
+
   const blurFilter = atmoProps.blur > 0 ? `blur(${atmoProps.blur}px)` : 'none';
 
+  const grainMask = useMemo(() => {
+    const blurExtent = atmoProps.blur * 3;
+    const radius = orbSize / 2;
+    const innerPct = Math.max(0, ((radius - blurExtent) / orbSize) * 100);
+    const outerPct = Math.min(100, ((radius + blurExtent) / orbSize) * 100);
+    return `radial-gradient(circle, black ${innerPct.toFixed(1)}%, transparent ${outerPct.toFixed(1)}%)`;
+  }, [atmoProps.blur, orbSize]);
+
   return (
-    <div
-      className={s.wrap}
-      style={{ width: orbSize, height: orbSize, filter: blurFilter }}
-    >
-      <div ref={layerARef} className={s.layer} style={{ opacity: 1 }}>
-        <div ref={grainARef} className={s.grain} />
+    <div className={s.container} style={{ width: orbSize, height: orbSize }}>
+      <div className={s.wrap} style={{ filter: blurFilter }}>
+        <div ref={layerARef} className={s.layer} style={{ opacity: 1 }} />
+        <div ref={layerBRef} className={s.layer} style={{ opacity: 0 }} />
       </div>
-      <div ref={layerBRef} className={s.layer} style={{ opacity: 0 }}>
-        <div ref={grainBRef} className={s.grain} />
-      </div>
+      <div
+        ref={grainRef}
+        className={s.grainOverlay}
+        style={{
+          WebkitMaskImage: grainMask,
+          maskImage: grainMask,
+        }}
+      />
     </div>
   );
 }
